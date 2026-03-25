@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原则因果链学习</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .chain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .chain-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 16px;
+            padding: 25px;
+            border-left: 6px solid #10b981;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .chain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+        
+        .chain-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .chain-emoji {
+            font-size: 3rem;
+        }
+        
+        .chain-title {
+            flex: 1;
+        }
+        
+        .chain-title h3 {
+            margin: 0 0 5px 0;
+            color: #1e293b;
+            font-size: 1.4rem;
+        }
+        
+        .chain-title .bonus {
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .chain-flow {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .principle-box {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        
+        .arrow {
+            font-size: 2rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+        
+        .chain-description {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .chain-description strong {
+            color: #1e40af;
+        }
+        
+        .chain-example {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .chain-example strong {
+            color: #92400e;
+        }
+        
+        .practice-section {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+        
+        .practice-section h2 {
+            color: #92400e;
+            margin-top: 0;
+        }
+        
+        .practice-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .practice-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .practice-option {
+            padding: 12px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .practice-option:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        
+        .practice-option.selected {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .practice-option.correct {
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+        
+        .practice-option.wrong {
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        
+        .feedback.error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 设计原则因果链学习</h1>
+            <p style="color: #64748b; font-size: 1.1rem;">理解原则之间的因果关系，掌握系统思维</p>
+            <a href="/" class="btn btn-secondary" style="display: inline-block; text-decoration: none; margin-top: 10px;">← 返回游戏</a>
+        </div>
+
+        <div style="background: #eff6ff; padding: 20px; border-radius: 12px; margin-bottom: 30px; border-left: 6px solid #3b82f6;">
+            <h3 style="margin: 0 0 10px 0; color: #1e40af;">💡 什么是原则因果链？</h3>
+            <p style="margin: 0; color: #475569; line-height: 1.6;">
+                在设计中，违背某个原则往往会<strong>导致</strong>违背另一个原则。
+                例如：不科学的设计（违背科学性）→ 必然无法正常使用（违背实用性）。
+                理解这种因果关系，能帮助你更深入地分析设计问题。
+            </p>
+            <p style="margin: 10px 0 0 0; color: #1e40af; font-weight: 600;">
+                🎯 在游戏中识别出因果链，可获得 +5分 额外奖励！
+            </p>
+        </div>
+
+        <h2 style="color: #1e293b; margin-bottom: 20px;">📚 六大核心因果链</h2>
+        
+        <div class="chain-grid">
+            <!-- Chain 1 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">🔬</div>
+                    <div class="chain-title">
+                        <h3>科学性 → 实用性</h3>
+                        <span class="bonus">+5分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">1.科学性</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">4.实用性</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>不科学的设计必然导致不实用
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>方形轮子自行车<br>
+                    <span style="font-size: 0.95rem;">违背力学原理（不科学）→ 骑行颠簸无法使用（不实用）</span>
+                </div>
+            </div>
+
+            <!-- Chain 2 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">🛡️</div>
+                    <div class="chain-title">
+                        <h3>安全性 → 工程心理学</h3>
+                        <span class="bonus">+5分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">3.安全性</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">8.工程心理学</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>不安全的设计往往也不符合人体工学
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>倒刺型防抖圆珠笔<br>
+                    <span style="font-size: 0.95rem;">会扎手（不安全）→ 握持不舒适（不符合人体工学）</span>
+                </div>
+            </div>
+
+            <!-- Chain 3 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">♻️</div>
+                    <div class="chain-title">
+                        <h3>经济性 → 可持续性</h3>
+                        <span class="bonus">+5分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">5.经济性</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">12.可持续性</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>不经济的设计往往也不可持续
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>一次性黄金手机壳<br>
+                    <span style="font-size: 0.95rem;">成本极高（不经济）→ 资源浪费（不可持续）</span>
+                </div>
+            </div>
+
+            <!-- Chain 4 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">⚙️</div>
+                    <div class="chain-title">
+                        <h3>实用性 → 可靠性</h3>
+                        <span class="bonus">+5分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">4.实用性</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">6.可靠性</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>不实用的产品通常也不可靠
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>一次性纸质雨衣<br>
+                    <span style="font-size: 0.95rem;">遇水就溶解（不实用）→ 质量不稳定（不可靠）</span>
+                </div>
+            </div>
+
+            <!-- Chain 5 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">📏</div>
+                    <div class="chain-title">
+                        <h3>标准化 → 经济性</h3>
+                        <span class="bonus">+4分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">7.标准化</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">5.经济性</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>不标准化会增加生产和使用成本
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>三角形接口充电线<br>
+                    <span style="font-size: 0.95rem;">非标准接口（不标准化）→ 需要定制生产（不经济）</span>
+                </div>
+            </div>
+
+            <!-- Chain 6 -->
+            <div class="chain-card">
+                <div class="chain-header">
+                    <div class="chain-emoji">⏱️</div>
+                    <div class="chain-title">
+                        <h3>时效性 → 实用性</h3>
+                        <span class="bonus">+4分</span>
+                    </div>
+                </div>
+                
+                <div class="chain-flow">
+                    <div class="principle-box">9.时效性</div>
+                    <div class="arrow">→</div>
+                    <div class="principle-box">4.实用性</div>
+                </div>
+                
+                <div class="chain-description">
+                    <strong>因果关系：</strong>时效性差会严重影响实用性
+                </div>
+                
+                <div class="chain-example">
+                    <strong>📌 典型案例：</strong>太阳能夜光手电筒<br>
+                    <span style="font-size: 0.95rem;">充电5分钟就没电（时效差）→ 无法满足实际需求（不实用）</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Section -->
+        <div class="practice-section">
+            <h2>🎯 练习：识别因果链</h2>
+            <p style="color: #78350f; margin-bottom: 20px;">通过练习巩固对因果链的理解</p>
+            
+            <div class="practice-card" id="practice-1">
+                <h3 style="margin-top: 0;">练习1：智能手环</h3>
+                <p style="color: #475569; line-height: 1.6;">
+                    某品牌推出的智能手环，使用了未经验证的新型传感器技术，
+                    导致心率监测数据经常出现严重偏差，无法用于健康管理。
+                </p>
+                <p style="font-weight: 600; margin-top: 15px;">这个案例体现了哪条因果链？</p>
+                <div class="practice-options">
+                    <div class="practice-option" data-answer="wrong">科学性 → 实用性</div>
+                    <div class="practice-option" data-answer="wrong">安全性 → 工程心理学</div>
+                    <div class="practice-option" data-answer="correct">实用性 → 可靠性</div>
+                    <div class="practice-option" data-answer="wrong">时效性 → 实用性</div>
+                </div>
+                <button class="btn btn-primary" onclick="checkAnswer(1)">提交答案</button>
+                <div class="feedback" id="feedback-1"></div>
+            </div>
+
+            <div class="practice-card" id="practice-2">
+                <h3 style="margin-top: 0;">练习2：环保购物袋</h3>
+                <p style="color: #475569; line-height: 1.6;">
+                    某公司推出的"环保"购物袋，使用了昂贵的进口材料，
+                    售价是普通购物袋的50倍，导致几乎没有人购买，最终大量积压浪费。
+                </p>
+                <p style="font-weight: 600; margin-top: 15px;">这个案例体现了哪条因果链？</p>
+                <div class="practice-options">
+                    <div class="practice-option" data-answer="wrong">科学性 → 实用性</div>
+                    <div class="practice-option" data-answer="correct">经济性 → 可持续性</div>
+                    <div class="practice-option" data-answer="wrong">标准化 → 经济性</div>
+                    <div class="practice-option" data-answer="wrong">实用性 → 可靠性</div>
+                </div>
+                <button class="btn btn-primary" onclick="checkAnswer(2)">提交答案</button>
+                <div class="feedback" id="feedback-2"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="btn btn-primary" style="display: inline-block; text-decoration: none;">开始游戏，应用所学知识！</a>
+        </div>
+    </div>
+
+    <script>
+        // Practice interaction
+        document.querySelectorAll('.practice-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const parent = this.closest('.practice-card');
+                parent.querySelectorAll('.practice-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                this.classList.add('selected');
+            });
+        });
+
+        function checkAnswer(practiceId) {
+            const card = document.getElementById(`practice-${practiceId}`);
+            const selected = card.querySelector('.practice-option.selected');
+            const feedback = document.getElementById(`feedback-${practiceId}`);
+            
+            if (!selected) {
+                feedback.className = 'feedback error show';
+                feedback.textContent = '请先选择一个答案！';
+                return;
+            }
+            
+            const isCorrect = selected.getAttribute('data-answer') === 'correct';
+            
+            card.querySelectorAll('.practice-option').forEach(opt => {
+                if (opt.getAttribute('data-answer') === 'correct') {
+                    opt.classList.add('correct');
+                } else if (opt.classList.contains('selected')) {
+                    opt.classList.add('wrong');
+                }
+                opt.style.pointerEvents = 'none';
+            });
+            
+            if (isCorrect) {
+                feedback.className = 'feedback success show';
+                feedback.innerHTML = '<strong>✅ 回答正确！</strong><br>你已经掌握了这条因果链的识别方法。';
+            } else {
+                feedback.className = 'feedback error show';
+                feedback.innerHTML = '<strong>❌ 回答错误</strong><br>请仔细阅读案例，思考原则之间的因果关系。';
+            }
+            
+            card.querySelector('.btn-primary').disabled = true;
+            card.querySelector('.btn-primary').style.opacity = '0.5';
+        }
+    </script>
+</body>
+</html>

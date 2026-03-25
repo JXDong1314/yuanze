@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国家专利局：实时对抗版</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 登录界面 -->
+        <div id="login-screen" class="screen active">
+            <h1>🛡️ 国家专利局：实时对抗版 🛡️</h1>
+            <div class="login-box">
+                <input type="text" id="username" placeholder="请输入你的真实姓名">
+                <button onclick="joinGame()">加入大厅</button>
+            </div>
+        </div>
+
+        <!-- 等待大厅 -->
+        <div id="lobby-screen" class="screen">
+            <h2>⏳ 等待大厅</h2>
+            <p>当前在线特工：<span id="online-count">0</span> 人</p>
+            <div id="user-list"></div>
+            <p class="status-text">等待局长（老师）下达指令...</p>
+            
+            <!-- Student Stage Navigation -->
+            <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; border: 2px solid #e2e8f0;">
+                <h3 style="margin: 0 0 15px 0; color: #1e293b;">🎯 阶段切换</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="requestStageSwitch('learning')" style="flex: 1; min-width: 150px; padding: 12px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">📚 进入学习阶段</button>
+                    <button onclick="requestStageSwitch('qualification')" style="flex: 1; min-width: 150px; padding: 12px; background: #f59e0b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">📝 进入考试阶段</button>
+                    <button onclick="requestStageSwitch('battle')" style="flex: 1; min-width: 150px; padding: 12px; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">⚔️ 进入大乱斗</button>
+                </div>
+                <p style="margin: 10px 0 0 0; font-size: 0.9rem; color: #64748b;">💡 提示：需要满足前置条件才能切换阶段</p>
+            </div>
+        </div>
+
+        <!-- 学习阶段 -->
+        <div id="learning-screen" class="screen">
+            <h2>📚 知识学习阶段</h2>
+            <p style="text-align: center; color: #64748b; margin-bottom: 30px;">
+                在开始测试前，请先学习设计原则和它们之间的关系
+            </p>
+            
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <!-- 学习卡片1 -->
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 16px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">📖 12条设计原则</h3>
+                        <p style="margin: 0 0 20px 0; opacity: 0.9; line-height: 1.6;">
+                            了解每条原则的含义和应用场景
+                        </p>
+                        <a href="/principles-guide.html" target="_blank" style="display: inline-block; padding: 10px 20px; background: white; color: #667eea; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                            开始学习 →
+                        </a>
+                    </div>
+                    
+                    <!-- 学习卡片2 -->
+                    <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 25px; border-radius: 16px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">🔗 原则因果链</h3>
+                        <p style="margin: 0 0 20px 0; opacity: 0.9; line-height: 1.6;">
+                            理解原则之间的因果关系，掌握系统思维
+                        </p>
+                        <a href="/principle-chains.html" target="_blank" style="display: inline-block; padding: 10px 20px; background: white; color: #10b981; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                            开始学习 →
+                        </a>
+                    </div>
+                    
+                    <!-- 学习卡片3 -->
+                    <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 25px; border-radius: 16px; color: white; box-shadow: 0 8px 20px rgba(0,0,0,0.15);">
+                        <h3 style="margin: 0 0 15px 0; font-size: 1.3rem;">📋 游戏规则</h3>
+                        <p style="margin: 0 0 20px 0; opacity: 0.9; line-height: 1.6;">
+                            了解游戏玩法、计分规则和策略建议
+                        </p>
+                        <button onclick="showGameRules()" style="padding: 10px 20px; background: white; color: #f59e0b; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                            查看规则 →
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="background: #eff6ff; padding: 25px; border-radius: 12px; border-left: 6px solid #3b82f6; margin-bottom: 20px;">
+                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">💡 学习建议</h3>
+                    <ul style="margin: 0; padding-left: 20px; color: #475569; line-height: 1.8;">
+                        <li>先浏览12条设计原则，了解基本概念</li>
+                        <li>重点学习6条核心因果链，理解原则之间的关系</li>
+                        <li>查看游戏规则，了解如何获得高分</li>
+                        <li>学习完成后，等待老师开始测试</li>
+                    </ul>
+                </div>
+                
+                <div style="text-align: center; padding: 20px; background: #e0f2fe; border-radius: 12px; border-left: 6px solid #3b82f6;">
+                    <p style="margin: 0 0 15px 0; color: #1e40af; font-size: 1.1rem; font-weight: 600;">
+                        ✅ 学习完成后，点击下方按钮进入考试
+                    </p>
+                    <button onclick="completeLearning()" style="padding: 12px 30px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);">
+                        完成学习，进入考试 →
+                    </button>
+                </div>
+                
+                <div id="skip-to-battle-container" style="text-align: center; padding: 20px; background: #f0fdf4; border-radius: 12px; border-left: 6px solid #10b981; margin-top: 15px;">
+                    <p style="margin: 0 0 15px 0; color: #166534; font-size: 1.1rem; font-weight: 600;">
+                        ⚔️ 已通过考试？直接进入大乱斗！
+                    </p>
+                    <button onclick="goToBattle()" style="padding: 12px 30px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-size: 1.05rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                        ⚔️ 直接进入大乱斗 →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 资格考 -->
+        <div id="qualification-screen" class="screen">
+            <h2>📝 新手村资格考</h2>
+            <p id="qualification-instruction">准备开始资格考试...</p>
+            <div id="questions-container"></div>
+            <button id="submit-qualification-btn" onclick="submitQualification()" style="display: none;">提交答卷</button>
+        </div>
+
+        <!-- 失败/重学阶段 -->
+        <div id="failed-screen" class="screen">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <div style="font-size: 5rem; margin-bottom: 20px;">😢</div>
+                <h2 style="color: #ef4444; margin-bottom: 20px;">积分过低，需要重新学习</h2>
+                
+                <div style="background: #fee2e2; padding: 25px; border-radius: 12px; border-left: 6px solid #ef4444; margin-bottom: 30px; text-align: left;">
+                    <h3 style="margin: 0 0 15px 0; color: #991b1b;">📊 你的当前状态</h3>
+                    <p style="margin: 0 0 10px 0; color: #7f1d1d; font-size: 1.1rem;">
+                        <strong>审查官分数：</strong><span id="failed-examiner-score">0</span>分
+                    </p>
+                    <p style="margin: 0 0 10px 0; color: #7f1d1d; font-size: 1.1rem;">
+                        <strong>发明家分数：</strong><span id="failed-inventor-score">0</span>分
+                    </p>
+                    <p style="margin: 0; color: #7f1d1d; font-size: 1.2rem; font-weight: 600;">
+                        <strong>总分：</strong><span id="failed-total-score">0</span>分（低于-10分）
+                    </p>
+                </div>
+                
+                <div style="background: #fef3c7; padding: 25px; border-radius: 12px; border-left: 6px solid #f59e0b; margin-bottom: 30px; text-align: left;">
+                    <h3 style="margin: 0 0 15px 0; color: #92400e;">💡 为什么会这样？</h3>
+                    <ul style="margin: 0; padding-left: 20px; color: #78350f; line-height: 1.8;">
+                        <li>审查判定错误会扣分（-3分/次）</li>
+                        <li>申诉失败会扣除保证金（-8分）</li>
+                        <li>陪审团投票错误会扣分（-2分/次）</li>
+                        <li>可能对原则理解还不够深入</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #dbeafe; padding: 25px; border-radius: 12px; border-left: 6px solid #3b82f6; margin-bottom: 30px; text-align: left;">
+                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">🎯 接下来该怎么做？</h3>
+                    <ol style="margin: 0; padding-left: 20px; color: #1e3a8a; line-height: 1.8;">
+                        <li>重新学习12条设计原则，加深理解</li>
+                        <li>重点学习6条因果链，掌握原则之间的关系</li>
+                        <li>仔细阅读游戏规则，了解得分技巧</li>
+                        <li>重新参加资格考试，通过后可以继续战斗</li>
+                    </ol>
+                </div>
+                
+                <button onclick="restartLearning()" style="padding: 15px 40px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                    🔄 开始重新学习
+                </button>
+            </div>
+        </div>
+
+        <!-- 大乱斗 -->
+        <div id="battle-screen" class="screen">
+            <div class="battle-header">
+                <div class="score-board">
+                    <span>🕵️ 审查分: <b id="my-examiner-score">0</b></span>
+                    <span>🤡 发明分: <b id="my-inventor-score">0</b></span>
+                </div>
+            </div>
+            
+            <div class="battle-container">
+                <!-- 左侧：发明家工坊 -->
+                <div class="panel left-panel">
+                    <h3>� 发明家工坊</h3>
+                    <input type="text" id="inv-title" placeholder="发明名称 (如: 倒立洗头机)">
+                    <textarea id="inv-desc" placeholder="描述你的奇葩发明..."></textarea>
+                    <p style="font-weight: 600; color: var(--dark);">暗中勾选违背的原则 (标准答案):</p>
+                    <div class="principles-grid" id="inv-principles">
+                        <!-- Principles generated by JS -->
+                    </div>
+                    <button onclick="submitInvention()" class="action-btn">提交专利</button>
+                    <p id="inv-status" class="status-msg"></p>
+                    
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                    
+                    <h4 style="color: var(--dark); margin-bottom: 15px;">📦 我提交的专利</h4>
+                    <div id="my-inventions-container" style="overflow-y: auto;">
+                        <p style="text-align: center; color: var(--gray); padding: 10px; font-size: 0.9rem;">暂无提交</p>
+                    </div>
+                </div>
+
+                <!-- 中侧：审查流水线 -->
+                <div class="panel right-panel">
+                    <h3>🧐 审查流水线 (<span id="review-task-count">0</span> 个可审)</h3>
+                    <div id="all-inventions-container" style="overflow-y: auto;">
+                        <p id="no-inventions-msg" style="text-align: center; color: var(--gray); padding: 20px;">暂无发明可审查，等待其他同学提交...</p>
+                    </div>
+                    <p id="review-status" class="status-msg"></p>
+                    <button id="btn-appeal" onclick="submitAppeal()" class="btn-appeal">👮 申请仲裁 (扣8分)</button>
+                    
+                    <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                    
+                    <h4 style="color: var(--dark); margin-bottom: 15px;">📜 审查历史记录</h4>
+                    <div id="review-history-container" style="overflow-y: auto;">
+                        <p style="text-align: center; color: var(--gray); padding: 10px; font-size: 0.9rem;">暂无审查记录</p>
+                    </div>
+                </div>
+                
+                <!-- 右侧：最高法庭 (公共陪审团) -->
+                <div class="panel court-panel" style="border-top: 6px solid var(--purple);">
+                    <h3 style="color: var(--purple);">⚖️ 最高法庭陪审团</h3>
+                    <p style="font-size: 0.95rem; color: var(--gray); text-align: center; margin-top: -10px;">参与投票，主持公道</p>
+                    <div id="active-court-cases" style="overflow-y: auto;">
+                        <p style="text-align: center; color: var(--gray); padding: 20px;">天下太平，暂无冤假错案。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rankings-overlay">
+                <div class="rank-column">
+                    <h4>🏆 火眼金睛榜</h4>
+                    <ul id="rank-examiner"></ul>
+                </div>
+                <div class="rank-column">
+                    <h4>🤡 法外狂徒榜</h4>
+                    <ul id="rank-inventor"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结算画面 -->
+        <div id="result-screen" class="screen">
+            <h1>👑 荣耀结算 👑</h1>
+            <div class="final-ranks">
+                <div class="rank-box">
+                    <h2>🏆 首席审查官</h2>
+                    <ul id="final-examiner-rank"></ul>
+                </div>
+                <div class="rank-box">
+                    <h2>🤡 疯狂发明家</h2>
+                    <ul id="final-inventor-rank"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 审查模态框 -->
+        <div id="review-modal" class="modal">
+            <div class="modal-content" style="max-width: 600px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0; text-align: left; font-size: 1.5rem; color: var(--primary);">📝 审查专利</h2>
+                    <span id="close-review-modal" style="cursor: pointer; font-size: 1.5rem; color: var(--gray);">&times;</span>
+                </div>
+                <div class="jury-case">
+                    <p style="color: var(--gray); font-size: 0.95rem; margin-top: -10px; margin-bottom: 15px;">发明人: <span id="review-modal-inventor" style="font-weight: 600; color: var(--dark);"></span></p>
+                    <h3 id="review-modal-title" style="color: var(--dark); font-size: 1.3rem; margin-bottom: 15px;"></h3>
+                    <p id="review-modal-desc" style="font-size: 1.1rem; line-height: 1.6; color: #475569; margin-bottom: 20px;"></p>
+                </div>
+                <p style="font-weight: 600; margin: 20px 0 15px; color: var(--dark);">请勾选它违背的原则:</p>
+                <div class="principles-grid" id="review-modal-principles">
+                    <!-- Principles generated dynamically -->
+                </div>
+                <p style="font-weight: 600; margin: 20px 0 10px; color: var(--dark);">审查评语 (选填):</p>
+                <textarea id="review-modal-comment" placeholder="写下你对这个发明的无情吐槽... (限100字)" maxlength="100" style="min-height: 80px; margin-bottom: 10px;"></textarea>
+                <button id="btn-submit-review" class="action-btn" style="margin-top: 10px;">提交审查结果</button>
+            </div>
+        </div>
+
+        <!-- 陪审团投票模态框 (Deprecated but kept for structure if needed) -->
+        <div id="jury-modal" class="modal">
+            <div class="modal-content">
+                <h2>⚖️ 群众陪审团 - 你被邀请参与仲裁</h2>
+                <div class="jury-case">
+                    <p><strong>申诉人（审查官）：</strong><span id="jury-appellant"></span></p>
+                    <p><strong>发明人：</strong><span id="jury-inventor"></span></p>
+                    <hr>
+                    <h3 id="jury-title"></h3>
+                    <p id="jury-desc"></p>
+                    <hr>
+                    <p><strong>审查官的答案：</strong><span id="jury-examiner-ans"></span></p>
+                    <p><strong>发明人的答案：</strong><span id="jury-inventor-ans"></span></p>
+                </div>
+                <div class="jury-timer">
+                    <p>剩余时间：<span id="jury-countdown">30</span> 秒</p>
+                </div>
+                <div class="jury-question">
+                    <p><strong>你认为谁是对的？</strong></p>
+                </div>
+                <div class="jury-buttons">
+                    <button onclick="voteJury('support_examiner')" class="btn-vote-examiner">支持审查官</button>
+                    <button onclick="voteJury('support_inventor')" class="btn-vote-inventor">支持发明人</button>
+                </div>
+                <p id="jury-vote-status" class="status-msg"></p>
+            </div>
+        </div>
+        
+        <!-- 申诉理由模态框 -->
+        <div id="appeal-reason-modal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <h2 style="color: var(--danger); margin-top: 0;">👮 提起仲裁申诉</h2>
+                <p style="color: var(--gray); font-size: 0.95rem;">申诉将扣除 8 分保证金。如果胜诉将获得补偿！</p>
+                <textarea id="appeal-reason-text" placeholder="请填写申诉理由，陈述你为什么认为自己是对的... (必填)" style="min-height: 120px;"></textarea>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button onclick="confirmSubmitAppeal()" style="background: var(--danger);">确认申诉</button>
+                    <button onclick="closeAppealModal()" style="background: var(--gray);">取消</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 被告辩护模态框 -->
+        <div id="defense-modal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <h2 style="color: var(--primary); margin-top: 0;">🛡️ 为发明辩护</h2>
+                <p style="color: var(--gray); font-size: 0.95rem;">原告正在向你发难，请向陪审团说明你的专利设计理念！</p>
+                <textarea id="defense-text" placeholder="反驳原告的申诉理由... (必填)" style="min-height: 120px;"></textarea>
+                <div style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button onclick="confirmSubmitDefense()" style="background: var(--primary);">提交辩护词</button>
+                    <button onclick="closeDefenseModal()" style="background: var(--gray);">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Notification Toast Container -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <script src="client.js"></script>
+</body>
+</html>

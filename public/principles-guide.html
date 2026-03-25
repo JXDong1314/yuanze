@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计原则关联图谱</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .guide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .guide-header h1 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .guide-header p {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+        
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .principle-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 5px solid;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .principle-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .principle-card h3 {
+            margin: 0 0 10px 0;
+            color: #1e293b;
+            font-size: 1.2rem;
+        }
+        
+        .principle-card .related {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .relation-section {
+            margin-bottom: 40px;
+        }
+        
+        .relation-section h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #3b82f6;
+        }
+        
+        .relation-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .relation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .relation-card.strong {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        
+        .relation-card.conflict {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        }
+        
+        .relation-card h3 {
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .relation-card .emoji {
+            font-size: 2rem;
+        }
+        
+        .relation-card .description {
+            color: #475569;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        
+        .relation-card .example {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .relation-card.conflict .example {
+            border-left-color: #f59e0b;
+        }
+        
+        .bonus-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .back-button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="guide-container">
+        <div class="guide-header">
+            <h1>🎯 设计原则关联图谱</h1>
+            <p>理解原则之间的关系，获得额外奖励分数！</p>
+            <a href="/" class="back-button">← 返回游戏</a>
+        </div>
+
+        <div class="relation-section">
+            <h2>🔗 强关联组（经常一起出现）</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">当你正确识别出这些组合时，将获得额外奖励分数！</p>
+            
+            <div class="relation-cards">
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">🛡️</span>
+                        <span>安全性 ↔ 工程心理学</span>
+                        <span class="bonus-badge">+3分</span>
+                    </h3>
+                    <div class="description">
+                        不安全的设计往往也不符合人体工学原理。危险的产品通常会让用户感到不适或难以使用。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>倒刺型防抖圆珠笔<br>
+                        笔杆布满倒刺，既不安全（会扎手），也不符合人体工学（握持不舒适）
+                    </div>
+                </div>
+
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">⚙️</span>
+                        <span>实用性 ↔ 可靠性</span>
+                        <span class="bonus-badge">+3分</span>
+                    </h3>
+                    <div class="description">
+                        不实用的产品通常也不可靠。如果产品无法解决实际问题，往往也无法稳定工作。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>一次性纸质雨衣<br>
+                        遇水30分钟就溶解，既不实用（无法真正防雨），也不可靠（质量不稳定）
+                    </div>
+                </div>
+
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">♻️</span>
+                        <span>经济性 ↔ 可持续发展</span>
+                        <span class="bonus-badge">+3分</span>
+                    </h3>
+                    <div class="description">
+                        不经济的设计往往也不可持续。浪费资源的产品既增加成本，也破坏环境。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>一次性黄金手机壳<br>
+                        用纯金制作一次性产品，既不经济（成本极高），也不可持续（资源浪费）
+                    </div>
+                </div>
+
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">🔬</span>
+                        <span>科学性 ↔ 实用性</span>
+                        <span class="bonus-badge">+3分</span>
+                    </h3>
+                    <div class="description">
+                        不科学的设计必然不实用。违背科学规律的产品无法真正解决问题。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>方形轮子自行车<br>
+                        违背力学原理（不科学），导致无法正常骑行（不实用）
+                    </div>
+                </div>
+
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">⏱️</span>
+                        <span>时效性 ↔ 实用性</span>
+                        <span class="bonus-badge">+2分</span>
+                    </h3>
+                    <div class="description">
+                        时效性差的产品会影响实用性。无法及时发挥作用的产品，实用价值大打折扣。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>太阳能夜光手电筒<br>
+                        白天充电晚上用，但只能用5分钟（时效差），导致无法满足实际需求（不实用）
+                    </div>
+                </div>
+
+                <div class="relation-card strong">
+                    <h3>
+                        <span class="emoji">📏</span>
+                        <span>标准化 ↔ 经济性</span>
+                        <span class="bonus-badge">+2分</span>
+                    </h3>
+                    <div class="description">
+                        不标准化的设计会增加成本。特殊规格需要定制生产，无法规模化降低成本。
+                    </div>
+                    <div class="example">
+                        <strong>📌 案例：</strong>三角形接口充电线<br>
+                        非标准接口（不标准化），导致生产和使用成本高（不经济）
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relation-section">
+            <h2>⚡ 矛盾关联（需要权衡的原则对）</h2>
+            <p style="color: #64748b; margin-bottom: 20px;">这些原则可能相互冲突，理解它们的矛盾关系将获得深度理解奖励！</p>
+            
+            <div class="relation-cards">
+                <div class="relation-card conflict">
+                    <h3>
+                        <span class="emoji">⚡</span>
+                        <span>创新性 vs 标准化</span>
+                        <span class="bonus-badge" style="background: #f59e0b;">+2分</span>
+                    </h3>
+                    <div class="description">
+                        过度创新可能破坏标准，过度标准化限制创新。设计时需要在创新和兼容性之间找到平衡。
+                    </div>
+                    <div class="example">
+                        <strong>📌 思考：</strong>苹果的Lightning接口 vs USB-C标准<br>
+                        创新的专有接口 vs 通用标准，如何权衡？
+                    </div>
+                </div>
+
+                <div class="relation-card conflict">
+                    <h3>
+                        <span class="emoji">⚡</span>
+                        <span>经济性 vs 可靠性</span>
+                        <span class="bonus-badge" style="background: #f59e0b;">+2分</span>
+                    </h3>
+                    <div class="description">
+                        降低成本可能影响质量，提高质量会增加成本。需要在价格和品质之间找到最佳平衡点。
+                    </div>
+                    <div class="example">
+                        <strong>📌 思考：</strong>廉价手机 vs 旗舰手机<br>
+                        低价策略 vs 高品质保证，如何选择？
+                    </div>
+                </div>
+
+                <div class="relation-card conflict">
+                    <h3>
+                        <span class="emoji">⚡</span>
+                        <span>创新性 vs 安全性</span>
+                        <span class="bonus-badge" style="background: #f59e0b;">+2分</span>
+                    </h3>
+                    <div class="description">
+                        新技术可能带来未知风险，过度强调安全会限制创新。创新需要充分的安全验证。
+                    </div>
+                    <div class="example">
+                        <strong>📌 思考：</strong>自动驾驶技术<br>
+                        技术创新 vs 行车安全，如何平衡？
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="relation-section">
+            <h2>📚 12条设计原则速查</h2>
+            <div class="principles-grid">
+                <div class="principle-card" style="border-left-color: #3b82f6;">
+                    <h3>1. 科学性原则</h3>
+                    <p>设计必须符合科学规律和自然法则</p>
+                    <div class="related">
+                        <strong>强关联：</strong>4.实用性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #8b5cf6;">
+                    <h3>2. 创新性原则</h3>
+                    <p>设计应有新意和突破</p>
+                    <div class="related">
+                        <strong>矛盾关联：</strong>7.标准化、3.安全性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #ef4444;">
+                    <h3>3. 安全性原则</h3>
+                    <p>不危害人身和财产安全</p>
+                    <div class="related">
+                        <strong>强关联：</strong>8.工程心理学<br>
+                        <strong>矛盾关联：</strong>2.创新性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #3b82f6;">
+                    <h3>4. 实用性原则</h3>
+                    <p>能解决实际问题，满足需求</p>
+                    <div class="related">
+                        <strong>强关联：</strong>6.可靠性、1.科学性、9.时效性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #10b981;">
+                    <h3>5. 经济性原则</h3>
+                    <p>成本合理，性价比高</p>
+                    <div class="related">
+                        <strong>强关联：</strong>12.可持续、7.标准化<br>
+                        <strong>矛盾关联：</strong>6.可靠性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #3b82f6;">
+                    <h3>6. 可靠性和耐用性原则</h3>
+                    <p>质量稳定，经久耐用</p>
+                    <div class="related">
+                        <strong>强关联：</strong>4.实用性<br>
+                        <strong>矛盾关联：</strong>5.经济性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #10b981;">
+                    <h3>7. 标准化原则</h3>
+                    <p>符合行业标准和规范</p>
+                    <div class="related">
+                        <strong>强关联：</strong>5.经济性<br>
+                        <strong>矛盾关联：</strong>2.创新性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #ef4444;">
+                    <h3>8. 工程心理学和生理学原则</h3>
+                    <p>符合人体工学，使用舒适</p>
+                    <div class="related">
+                        <strong>强关联：</strong>3.安全性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #f59e0b;">
+                    <h3>9. 时效性原则</h3>
+                    <p>及时有效，响应迅速</p>
+                    <div class="related">
+                        <strong>强关联：</strong>4.实用性
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #6366f1;">
+                    <h3>10. 最优化原则</h3>
+                    <p>追求最佳方案和效果</p>
+                    <div class="related">
+                        <strong>关联：</strong>综合考虑各项原则
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #ec4899;">
+                    <h3>11. 法律、道德规范原则</h3>
+                    <p>合法合规，符合道德</p>
+                    <div class="related">
+                        <strong>关联：</strong>独立原则，优先级高
+                    </div>
+                </div>
+
+                <div class="principle-card" style="border-left-color: #10b981;">
+                    <h3>12. 可持续发展原则</h3>
+                    <p>环保可持续，长远发展</p>
+                    <div class="related">
+                        <strong>强关联：</strong>5.经济性
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="back-button">← 返回游戏开始挑战</a>
+        </div>
+    </div>
+</body>
+</html>

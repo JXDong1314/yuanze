@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师控制台 - 国家专利局</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body { 
+            background: var(--bg-gradient); 
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            gap: 20px;
+            align-items: start;
+        }
+        .dashboard-col {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1 style="margin-bottom: 10px;">🎮 教师总控台</h1>
+        <div class="stats" style="display: inline-flex; margin-bottom: 0;">
+            <span>👥 在线人数: <span id="online-count">0</span></span>
+            <span>⏱️ 当前阶段: <span id="game-state">Loading...</span></span>
+        </div>
+    </div>
+
+    <div class="admin-dashboard">
+        <!-- Left Column: Game Controls & Users -->
+        <div class="dashboard-col">
+            <div class="control-group">
+                <h3>🕹️ 批量阶段控制</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn-blue" onclick="adminStartLearning()">📚 全部进入学习阶段</button>
+                    <button class="btn-blue" onclick="adminStartQualification()">🏁 全部进入考试阶段</button>
+                    <button class="btn-green" onclick="adminStartBattle()">⚔️ 已通过考试者进入大乱斗</button>
+                    <button class="btn-orange" onclick="adminForceStartBattle()">⚡ 强制所有人进入大乱斗（跳过考试）</button>
+                    <button class="btn-yellow" onclick="adminEndGame()">🏆 结束游戏并结算</button>
+                </div>
+            </div>
+
+            <div class="control-group" style="padding: 15px;">
+                <h3>📋 学生进度监控</h3>
+                <p style="font-size: 0.9rem; color: #64748b; margin: -10px 0 15px 0;">
+                    点击按钮可强制改变单个学生的阶段
+                </p>
+                <div id="user-list" style="max-height: 500px; overflow-y: auto; display: flex; flex-direction: column;"></div>
+            </div>
+            
+            <div class="control-group" style="border-color: var(--danger); padding: 15px;">
+                <h3 style="color: var(--danger); font-size: 1rem; margin-bottom: 10px;">⚠️ 危险操作</h3>
+                <button class="btn-red" style="width: 100%; padding: 8px; font-size: 0.9rem;" onclick="adminReset()">🔄 重置游戏数据</button>
+            </div>
+        </div>
+
+        <!-- Middle Column: Appeals & Inventions -->
+        <div class="dashboard-col">
+            <div class="control-group arbitration-section" id="arbitration-section" style="border-top: 6px solid var(--purple);">
+                <h3>⚖️ 最高法院仲裁庭</h3>
+                <div id="appeals-list" style="max-height: 500px; overflow-y: auto;">
+                    <p style="text-align: center; color: var(--gray); padding: 20px;">天下太平，暂无申诉案件。</p>
+                </div>
+            </div>
+
+            <div class="control-group" style="border-color: var(--secondary);">
+                <h3 style="color: var(--secondary);">� 所有提交的发明 (<span id="invention-count">0</span>)</h3>
+                <div id="inventions-list" style="max-height: 400px; overflow-y: auto;">
+                    <p style="text-align: center; color: var(--gray); padding: 20px;">暂无发明提交。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Rankings -->
+        <div class="dashboard-col">
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); border-top: 6px solid var(--success);">
+                <h3 style="text-align: center; color: var(--success); margin-top: 0;">🏆 火眼金睛榜 (Top 5)</h3>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--gray); margin-top: -10px;">审查官得分排名</p>
+                <ul id="admin-examiner-rank" style="list-style: none; padding: 0; margin: 0; font-size: 1.05rem; line-height: 2.2;"></ul>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: var(--shadow); border-top: 6px solid var(--danger);">
+                <h3 style="text-align: center; color: var(--danger); margin-top: 0;">🤡 法外狂徒榜 (Top 5)</h3>
+                <p style="text-align: center; font-size: 0.85rem; color: var(--gray); margin-top: -10px;">发明家得分排名</p>
+                <ul id="admin-inventor-rank" style="list-style: none; padding: 0; margin: 0; font-size: 1.05rem; line-height: 2.2;"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
