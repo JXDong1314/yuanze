@@ -887,6 +887,25 @@ io.on('connection', (socket) => {
         io.emit('updateAllInventions', inventions);
     });
 
+    // Admin delete invention
+    socket.on('deleteInvention', (data) => {
+        if (!users[socket.id] || users[socket.id].name !== 'ADMIN') return;
+        
+        const inventionIndex = inventions.findIndex(inv => inv.id === data.inventionId);
+        if (inventionIndex === -1) {
+            io.to(socket.id).emit('systemMessage', '❌ 未找到该发明！');
+            return;
+        }
+        
+        const deletedInvention = inventions[inventionIndex];
+        inventions.splice(inventionIndex, 1);
+        
+        // Broadcast updated inventions list
+        io.emit('updateInventions', inventions);
+        io.emit('updateAllInventions', inventions);
+        io.to(socket.id).emit('systemMessage', `✅ 已删除发明「${deletedInvention.title}」`);
+    });
+
     // 4. Battle Logic - Examiner (New: Open review system - anyone can review any invention)
     socket.on('submitInventionReview', (data) => {
         // data: { inventionId, selectedPrinciples: [], comment: string }

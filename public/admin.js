@@ -301,9 +301,21 @@ socket.on('updateInventions', (inventions) => {
     
     list.innerHTML = inventions.map((inv, idx) => `
         <div style="padding: 15px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; background: ${idx % 2 === 0 ? '#f8fafc' : '#fff'}; box-shadow: var(--shadow-sm);">
-            <p style="margin-top: 0; font-size: 1.1rem; color: var(--dark);"><b>🔨 ${inv.title}</b> <span style="color: var(--gray); font-size: 0.9em; margin-left: 10px;">by ${inv.inventorName}</span></p>
-            <p style="font-size: 1rem; color: #475569; line-height: 1.5; margin: 10px 0;">${inv.desc}</p>
-            <p style="font-size: 0.9rem; color: var(--success); margin-bottom: 0; background: #ecfdf5; display: inline-block; padding: 4px 10px; border-radius: 6px;"><b>设定违背原则:</b> ${formatPrinciples(inv.trueAnswers)}</p>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="flex: 1;">
+                    <p style="margin-top: 0; font-size: 1.1rem; color: var(--dark);"><b>🔨 ${inv.title}</b> <span style="color: var(--gray); font-size: 0.9em; margin-left: 10px;">by ${inv.inventorName}</span></p>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.5; margin: 10px 0;">${inv.desc}</p>
+                    <p style="font-size: 0.9rem; color: var(--success); margin-bottom: 0; background: #ecfdf5; display: inline-block; padding: 4px 10px; border-radius: 6px;"><b>设定违背原则:</b> ${formatPrinciples(inv.trueAnswers)}</p>
+                </div>
+                <button onclick="deleteInvention('${inv.id}', '${inv.title.replace(/'/g, "\\'")}')" style="margin-left: 10px; padding: 8px 12px; background: #fee2e2; color: #991b1b; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; white-space: nowrap;">🗑️ 删除</button>
+            </div>
         </div>
     `).join('');
 });
+
+// Delete invention function
+window.deleteInvention = function(inventionId, inventionTitle) {
+    if (confirm(`确定要删除发明「${inventionTitle}」吗？\n\n此操作不可恢复！`)) {
+        socket.emit('deleteInvention', { inventionId });
+    }
+}
